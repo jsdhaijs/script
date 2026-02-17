@@ -1,10 +1,4 @@
-local Script = "Get Moon Stand for free at discord.gg/mfyCBWWExF"
 
-local Owner = "MagicAc3Sky"
-local BlackScreen = true
-local DisableRendering = true
-local FPSCap = 60
-local Guns = {"rifle", "aug", "flintlock", "flamethrower"}
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
