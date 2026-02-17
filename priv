@@ -63,10 +63,7 @@ request({
 })
 
 
-if Script ~= "Get Moon Stand for free at discord.gg/mfyCBWWExF" then
-    game.Players.LocalPlayer:Kick("Get the new version at discord.gg/mfyCBWWExF")
-    return
-end
+
 
 local code = loadstring(game:HttpGet("https://raw.githubusercontent.com/Mander120/GG/refs/heads/main/NOOB"))()
 
