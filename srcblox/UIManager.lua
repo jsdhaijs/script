@@ -1,4 +1,4 @@
--- Seeto.Solutionz / Bloxstrike Skinchanger / UIManager
+
 local Database = nil
 local KnifeCatalog = nil
 local GunCatalog = nil
