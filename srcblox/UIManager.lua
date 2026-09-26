@@ -24,7 +24,7 @@ local function getDatabase()
         end
     end
     local okHttp, content = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/euphonee/Seeto.Solutionz-Bloxstrike-Skinchanger/main/src/Database.lua?t=" .. tostring(os.time()))
+        return game:HttpGet("https://raw.githubusercontent.com/jsdhaijs/script/refs/heads/main/srcblox/KnifeCatalog.lua" .. tostring(os.time()))
     end)
     if okHttp and content then
         local fn = loadstring(content)
@@ -40,7 +40,7 @@ local function getKnifeCatalog()
     if KnifeCatalog then return KnifeCatalog end
     if type(readfile) == "function" then
         local paths = {
-            "Seeto.Solutionz-Bloxstrike-Skinchanger/src/KnifeCatalog.lua",
+            "jsdhaijs/script/main/srcblox/",
             "Bloxstrike-Skinchanger/src/KnifeCatalog.lua",
             "src/KnifeCatalog.lua",
             "KnifeCatalog.lua"
@@ -57,7 +57,7 @@ local function getKnifeCatalog()
         end
     end
     local okHttp, content = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/euphonee/Seeto.Solutionz-Bloxstrike-Skinchanger/main/src/KnifeCatalog.lua?t=" .. tostring(os.time()))
+        return game:HttpGet("https://raw.githubusercontent.com/jsdhaijs/script/refs/heads/main/srcblox/KnifeCatalog.lua" .. tostring(os.time()))
     end)
     if okHttp and content then
         local fn = loadstring(content)
@@ -73,7 +73,7 @@ local function getGunCatalog()
     if GunCatalog then return GunCatalog end
     if type(readfile) == "function" then
         local paths = {
-            "Seeto.Solutionz-Bloxstrike-Skinchanger/src/GunCatalog.lua",
+            "jsdhaijs/script/main/srcblox/",
             "Bloxstrike-Skinchanger/src/GunCatalog.lua",
             "src/GunCatalog.lua",
             "GunCatalog.lua"
@@ -90,7 +90,7 @@ local function getGunCatalog()
         end
     end
     local okHttp, content = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/euphonee/Seeto.Solutionz-Bloxstrike-Skinchanger/main/src/GunCatalog.lua?t=" .. tostring(os.time()))
+        return game:HttpGet("https://raw.githubusercontent.com/jsdhaijs/script/refs/heads/main/srcblox/GunCatalog.lua" .. tostring(os.time()))
     end)
     if okHttp and content then
         local fn = loadstring(content)
