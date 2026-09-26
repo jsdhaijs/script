@@ -7,7 +7,7 @@ local function getDatabase()
     if Database then return Database end
     if type(readfile) == "function" then
         local paths = {
-            "Seeto.Solutionz-Bloxstrike-Skinchanger/src/Database.lua",
+            "jsdhaijs/script/main/srcblox/",
             "Bloxstrike-Skinchanger/src/Database.lua",
             "src/Database.lua",
             "Database.lua"
