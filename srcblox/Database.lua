@@ -1,4 +1,3 @@
--- Seeto.Solutionz / Bloxstrike Skinchanger / Database
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Database = {}
