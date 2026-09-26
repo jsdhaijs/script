@@ -153,7 +153,7 @@ function UIManager.init(Config, Library, API, Db, unloadCallback)
     if defaultH < 340 then defaultH = 390 end
 
     local Window = Library:CreateWindow({
-        Title = "Seeto.SolutionZ / Bloxstrike Skinchanger",
+        Title = "dev / Bloxstrike Skinchanger",
         Center = true,
         AutoShow = true,
         TabPadding = 6,
