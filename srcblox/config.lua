@@ -1,4 +1,4 @@
--- Seeto.Solutionz / Bloxstrike Skinchanger / Config
+
 local HttpService = game:GetService("HttpService")
 
 local Config = {
