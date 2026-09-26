@@ -1,4 +1,4 @@
--- Seeto.Solutionz / Bloxstrike Skinchanger / Public API
+
 local API = {}
 
 local Config = nil
