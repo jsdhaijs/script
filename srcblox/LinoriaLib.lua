@@ -15,7 +15,7 @@ local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 local ScreenGui = Instance.new('ScreenGui');
 ProtectGui(ScreenGui);
 
-ScreenGui.Name = "SeetoSkinChangerGui";
+ScreenGui.Name = "devSkinChangerGui";
 ScreenGui.ResetOnSpawn = false;
 ScreenGui.DisplayOrder = 100;
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
